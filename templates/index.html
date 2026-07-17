@@ -5,5 +5,14 @@
 {% endblock %}
 
 {% block body %}
-
+    <nav>
+        <div>
+            <a class="crab-button" href="{{ url_for('index') }}">crab<span class="dot">.</span>diy</a>
+            <a class="nav-button" href="#">Features</a>
+            <a class="nav-button" href="#">Pricing</a>
+            <a class="nav-button" href="#">Discord</a>
+            <a class="user-button" href="{{ url_for('login') }}">Sign-In</a>
+            <a class="user-button" href="{{ url_for('register') }}">Sign-Up</a>
+        </div>
+    </nav>
 {% endblock %}

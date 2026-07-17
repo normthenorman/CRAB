@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>crab.diy | Dashboard</title>
+{% endblock %}
+
+{% block body %}
+
+    <h1>Welcome, {{ current_user.username }}!</h1>
+
+    <br><a href="{{ url_for('logout') }}">logout</a>
+    <br><a href="{{ url_for('index') }}">home</a>
+
+{% endblock %}
