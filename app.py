@@ -38,7 +38,7 @@ def load_user(user_id):
 
 class RegisterForm(FlaskForm):
     email = StringField(
-        validators=[InputRequired(), Email(), Length(min=1, max=24)],
+        validators=[InputRequired(), Email(), Length(min=8, max=48)],
         render_kw={"placeholder": "E-mail..."}
     )
     password = PasswordField(
@@ -54,8 +54,16 @@ class RegisterForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    email = StringField(validators=[InputRequired(), Email(), Length(min=1, max=24)], render_kw={"placeholder": "Username..."})
-    password = PasswordField(validators=[InputRequired(), Length(min=8, max=32)], render_kw={"placeholder": "E-mail..."})
+    email = StringField(
+        validators=[InputRequired(), Email(), Length(min=1, max=24)], 
+        render_kw={"placeholder": "E-mail..."}
+    )
+    
+    password = PasswordField(
+        validators=[InputRequired(), Length(min=8, max=32)], 
+        render_kw={"placeholder": "Password..."}
+    )
+    
     submit = SubmitField('Login')
 
 
@@ -90,12 +98,13 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid username or password', 'danger')
+            return redirect(url_for('login'))
 
     return render_template('login.html', form=form)
 
@@ -112,10 +121,21 @@ def dashboard():
         return redirect(url_for('onboarding'))
     return render_template('dashboard.html')
 
+class onboardingForm(FlaskForm):
+
+    username = StringField(
+        validators=[InputRequired(), Length(min=3, max=24)],
+        render_kw={"Placeholder" : "username"}
+    )
+    
+    submit = SubmitField('Claim username')
+    
 @app.route('/onboarding')
 @login_required
 def onboarding():
-    return render_template('onboarding.html')
+    form = onboardingForm()
+    
+    return render_template('onboarding.html', form=form)
 
 if __name__ == "__main__":
     with app.app_context():

@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
 
-{% block head %}{% endblock %}
+{% block head %}
+<title>crab.diy | onboarding</title>
+{% endblock %}
 
-{% block body %}{% endblock %}
+{% block body %}
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        {{ form.username }}
+        <div style="height: 10px;"></div>
+        {{ form.submit }}
+    </form>
+{% endblock %}
