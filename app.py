@@ -25,7 +25,7 @@ login_manager.login_view = 'login'
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), nullable=False, unique=True)
-    # username = db.Column(db.String(20), nullable=False, unique=True)
+    username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     onboarding_complete = db.Column(db.Boolean,default=False, nullable=False)
     verified_email = db.Column(db.Boolean, default=False, nullable=False)
@@ -85,11 +85,6 @@ def register():
 
         db.session.add(new_user)
         db.session.commit()
-        
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user) 
-            return redirect(url_for('index'))
 
     return render_template('register.html', form=form)
 
@@ -134,7 +129,12 @@ class onboardingForm(FlaskForm):
 @login_required
 def onboarding():
     form = onboardingForm()
-    
+    if form.validate_on_submit():
+        username = User(username=form.username.data)
+        
+        db.session.add(username)
+        db.session.commit()
+        
     return render_template('onboarding.html', form=form)
 
 if __name__ == "__main__":
