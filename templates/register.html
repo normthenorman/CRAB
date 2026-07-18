@@ -5,17 +5,18 @@
 {% endblock %}
 
 {% block body %}
+<div class="all-cred-form-pages">
+    <h1>Make an account</h1>
 
-    <h1>REGISTRATION PAGE</h1>
-
-    <form action="" method="post">
+    <form class="cred-form" action="" method="post">
         {{ form.hidden_tag() }}
-        {{ form.username }} <br>
+        {{ form.email }} <br>
+        <div style="height: 10px;"></div>
         {{ form.password }} <br>
+        <div style="height: 10px;"></div>
         {{ form.submit }} <br>
     </form>
 
     <br><a href="{{url_for('login')}}">already have an account?</a>
-    <br><a href="{{url_for('index')}}">home</a>
-
+</div>
 {% endblock %}

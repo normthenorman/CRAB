@@ -1,12 +1,13 @@
 import os
-
 from flask import Flask, render_template, url_for, redirect, flash
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, ValidationError
+from wtforms.validators import InputRequired, Length, ValidationError, Email
+from email_validator import validate_email, EmailNotValidError
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-only-insecure-key')
@@ -23,8 +24,11 @@ login_manager.login_view = 'login'
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), nullable=False, unique=True)
+    email = db.Column(db.String(64), nullable=False, unique=True)
+    # username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
+    onboarding_complete = db.Column(db.Boolean,default=False, nullable=False)
+    verified_email = db.Column(db.Boolean, default=False, nullable=False)
 
 
 @login_manager.user_loader
@@ -33,9 +37,9 @@ def load_user(user_id):
 
 
 class RegisterForm(FlaskForm):
-    username = StringField(
-        validators=[InputRequired(), Length(min=1, max=24)],
-        render_kw={"placeholder": "Username..."}
+    email = StringField(
+        validators=[InputRequired(), Email(), Length(min=1, max=24)],
+        render_kw={"placeholder": "E-mail..."}
     )
     password = PasswordField(
         validators=[InputRequired(), Length(min=8, max=32)],
@@ -50,8 +54,8 @@ class RegisterForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    username = StringField(validators=[InputRequired(), Length(min=1, max=24)], render_kw={"placeholder": "Username"})
-    password = PasswordField(validators=[InputRequired(), Length(min=8, max=32)], render_kw={"placeholder": "Password"})
+    email = StringField(validators=[InputRequired(), Email(), Length(min=1, max=24)], render_kw={"placeholder": "Username..."})
+    password = PasswordField(validators=[InputRequired(), Length(min=8, max=32)], render_kw={"placeholder": "E-mail..."})
     submit = SubmitField('Login')
 
 
@@ -59,21 +63,27 @@ class LoginForm(FlaskForm):
 def index():
     return render_template('index.html')
 
-
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     form = RegisterForm()
 
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        new_user = User(username=form.username.data, password=hashed_password)
+        try:
+            emailinfo = validate_email(form.email.data, check_deliverability=False)
+            new_user = User(email=emailinfo.normalized, password=hashed_password)
+        except EmailNotValidError:
+            flash('this email is not valid')
 
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('login'))
+        
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user) 
+            return redirect(url_for('index'))
 
     return render_template('register.html', form=form)
-
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -89,19 +99,23 @@ def login():
 
     return render_template('login.html', form=form)
 
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
 
-
 @app.route('/dashboard')
 @login_required
 def dashboard():
+    if not current_user.onboarding_complete:
+        return redirect(url_for('onboarding'))
     return render_template('dashboard.html')
 
+@app.route('/onboarding')
+@login_required
+def onboarding():
+    return render_template('onboarding.html')
 
 if __name__ == "__main__":
     with app.app_context():

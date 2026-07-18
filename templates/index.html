@@ -11,6 +11,7 @@
             <a class="nav-button" href="#">Features</a>
             <a class="nav-button" href="#">Pricing</a>
             <a class="nav-button" href="#">Discord</a>
+            <a class="login-button" href="{{ url_for('login') }}">Login</a>
         </div>
         <div class="link">
             {% if current_user.is_authenticated %}
@@ -20,6 +21,4 @@
             {% endif %}
         </div>
     </nav>
-
-    <h1> {{ username }} </h1>
 {% endblock %}
