@@ -25,7 +25,7 @@ login_manager.login_view = 'login'
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), nullable=False, unique=True)
-    username = db.Column(db.String(20), nullable=False, unique=True)
+    username = db.Column(db.String(20), nullable=True, unique=True)
     password = db.Column(db.String(128), nullable=False)
     onboarding_complete = db.Column(db.Boolean,default=False, nullable=False)
     verified_email = db.Column(db.Boolean, default=False, nullable=False)
@@ -76,15 +76,25 @@ def register():
     form = RegisterForm()
 
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         try:
             emailinfo = validate_email(form.email.data, check_deliverability=False)
-            new_user = User(email=emailinfo.normalized, password=hashed_password)
         except EmailNotValidError:
-            flash('this email is not valid')
+            flash('This email is not valid', 'danger')
+            return render_template('register.html', form=form)
+
+        existing_user = User.query.filter_by(email=emailinfo.normalized).first()
+        if existing_user:
+            flash('An account with that email already exists', 'danger')
+            return render_template('register.html', form=form)
+
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        new_user = User(email=emailinfo.normalized, password=hashed_password)
 
         db.session.add(new_user)
         db.session.commit()
+
+        login_user(new_user)
+        return redirect(url_for('dashboard'))
 
     return render_template('register.html', form=form)
 
@@ -125,17 +135,22 @@ class onboardingForm(FlaskForm):
     
     submit = SubmitField('Claim username')
     
-@app.route('/onboarding')
+@app.route('/onboarding', methods=['GET', 'POST'])
 @login_required
 def onboarding():
     form = onboardingForm()
     if form.validate_on_submit():
-        username = User(username=form.username.data)
-        
-        db.session.add(username)
+        current_user.username = form.username.data
+        current_user.onboarding_complete = True
         db.session.commit()
-        
+        return redirect(url_for('dashboard'))
+
     return render_template('onboarding.html', form=form)
+
+@app.route('/<username>')
+def page(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('page.html', user=user)
 
 if __name__ == "__main__":
     with app.app_context():
