@@ -35,7 +35,7 @@
     left-1/2 -translate-x-1/2 flex items-center justify-between px-4
     bg-gradient-to-r from-orange-700/50 to-orange-600/50">
     <div class="flex whitespace-nowrap gap-8 overflow-hidden">
-        <span></span>
+        <span class="text-gray-400">A verification link has been sent to your address, <span id="placeholder"></span> .</span>
     </div>
     <button id="kaput" class="flex-shrink-0 hover:cursor-pointer">
         <img class="scale-75 invert opacity-60"
@@ -44,6 +44,10 @@
 </div>
     {% endif %}
 </div>
+
+<script>
+    const email = {{ email_info | tojson }};
+</script>
 
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 

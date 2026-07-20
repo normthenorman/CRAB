@@ -69,14 +69,16 @@ class LoginForm(FlaskForm):
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    return render_template('index.html', verified_email=current_user.verified_email if current_user.is_authenticated else True)
+    email_info = { "email" : current_user.email}
+    
+    return render_template('index.html',email_info=email_info , verified_email=current_user.verified_email if current_user.is_authenticated else True)
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     form = RegisterForm()
 
     if form.validate_on_submit():
-        try:
+        try:    
             emailinfo = validate_email(form.email.data, check_deliverability=False)
         except EmailNotValidError:
             flash('This email is not valid', 'danger')
