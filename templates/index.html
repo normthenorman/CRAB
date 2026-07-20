@@ -31,16 +31,21 @@
     </nav>
 
     {% if current_user.is_authenticated and not current_user.verified_email %}
-    <div class="absolute top-30 w-full max-w-2xl overflow-hidden rounded-md border border-amber-700/40 
-    py-3 left-1/2 translate-x-[-50%] bg-gradient-to-r from-orange-700/50 to-orange-600/50">
-        <div class="flex whitespace-nowrap gap-8">
-            
-        </div>
+<div id="kablow" class="absolute h-9 top-[125px] w-full max-w-3xl overflow-hidden rounded-md border border-amber-700/40
+    left-1/2 -translate-x-1/2 flex items-center justify-between px-4
+    bg-gradient-to-r from-orange-700/50 to-orange-600/50">
+    <div class="flex whitespace-nowrap gap-8 overflow-hidden">
+        <span></span>
     </div>
+    <button id="kaput" class="flex-shrink-0 hover:cursor-pointer">
+        <img class="scale-75 invert opacity-60"
+        src="{{ url_for('static', filename='assets/x.svg') }}" alt="Close">
+    </button>
+</div>
     {% endif %}
 </div>
 
-
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
 
     <!-- <div class="min-h-screen w-full relative bg-gradient-to-r from-fuchsia-500 via-red-600 to-orange-700
     flex items-center justify-center text-center flex-col gap-10 text-white p-52">
