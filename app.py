@@ -1,4 +1,6 @@
 import os
+import secrets
+from dotenv import load_dotenv
 from flask import Flask, render_template, url_for, redirect, flash
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
@@ -7,13 +9,28 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError, Email
 from email_validator import validate_email, EmailNotValidError
+from datetime import datetime, timedelta
+from flask_mail import Mail, Message
 
+load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-only-insecure-key')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('DEFAULT_MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
 
+# print(os.environ.get('MAIL_USERNAME'))
+# print(os.environ.get('DEFAULT_MAIL_USERNAME'))
+# print(os.environ.get('MAIL_PASSWORD'))
+
+mail = Mail(app)
 bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
 
@@ -27,8 +44,10 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), nullable=False, unique=True)
     username = db.Column(db.String(20), nullable=True, unique=True)
     password = db.Column(db.String(128), nullable=False)
-    onboarding_complete = db.Column(db.Boolean,default=False, nullable=False)
+    onboarding_complete = db.Column(db.Boolean, default=False, nullable=False)
     verified_email = db.Column(db.Boolean, default=False, nullable=False)
+    verification_token = db.Column(db.String(64), unique=True, nullable=True)
+    verification_token_expires = db.Column(db.DateTime, nullable=True)
 
 
 @login_manager.user_loader
@@ -36,25 +55,49 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+def verification_email(user):
+    token = secrets.token_urlsafe(32)
+    user.verification_token = token
+    user.verification_token_expires = datetime.utcnow() + timedelta(hours=36)
+    db.session.commit()
+
+    verify_url = url_for('verify_email', token=token, _external=True)
+    msg = Message(
+        'Verify your crab.diy account',
+        recipients=[user.email]
+    )
+    msg.body = f"""
+    Verify your email:
+    {verify_url}
+    This link expires in 36 hours.
+    """
+    msg.html = render_template(
+        "emails/verify_email.html",
+        verify_url=verify_url,
+        user=user
+    )
+    mail.send(msg)
+
+
 class RegisterForm(FlaskForm):
     email = StringField(
         validators=[InputRequired(), Email(), Length(min=8, max=48)],
-        render_kw={"id" : "email", "class" : "email-input" ,"placeholder": "E-mail..."}
+        render_kw={"id": "email", "class": "email-input", "placeholder": "E-mail..."}
     )
     password = PasswordField(
         validators=[InputRequired(), Length(min=8, max=32)],
-        render_kw={"id" : "pass", "class" : "password-input" ,"placeholder": "Password..."}
+        render_kw={"id": "pass", "class": "password-input", "placeholder": "Password..."}
     )
-    
+
     confirm_password = PasswordField(
         validators=[InputRequired(), Length(min=8, max=32)],
-        render_kw={"id" : "pass1", "class" : "password-input" ,"placeholder": "Repeat password..."}
+        render_kw={"id": "pass1", "class": "password-input", "placeholder": "Repeat password..."}
     )
-    
+
     submit = SubmitField(
-        render_kw={"class" : "submit-button", "value" : "Sign up"}
+        render_kw={"class": "submit-button", "value": "Sign up"}
     )
-    
+
     def validate_confirm_password(self, field):
         if field.data != self.password.data:
             raise ValidationError('Passwords must match')
@@ -62,35 +105,36 @@ class RegisterForm(FlaskForm):
 
 class LoginForm(FlaskForm):
     email = StringField(
-        validators=[InputRequired(), Email(), Length(min=8, max=48)], 
-        render_kw={"class" : "email-input" ,"placeholder": "E-mail..."}
+        validators=[InputRequired(), Email(), Length(min=8, max=48)],
+        render_kw={"class": "email-input", "placeholder": "E-mail..."}
     )
-    
+
     password = PasswordField(
-        validators=[InputRequired(), Length(min=8, max=32)], 
-        render_kw={"class" : "password-input" ,"placeholder": "Password..."}
+        validators=[InputRequired(), Length(min=8, max=32)],
+        render_kw={"class": "password-input", "placeholder": "Password..."}
     )
 
     submit = SubmitField(
-        render_kw={"class" : "submit-button", "value" : "Login"}    
+        render_kw={"class": "submit-button", "value": "Login"}
     )
 
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if current_user.is_authenticated:
-        email_info = { "email" : current_user.email}
+        email_info = {"email": current_user.email}
     else:
         email_info = None
-    
-    return render_template('index.html',email_info=email_info)
+
+    return render_template('index.html', email_info=email_info)
+
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     form = RegisterForm()
 
     if form.validate_on_submit():
-        try:    
+        try:
             emailinfo = validate_email(form.email.data, check_deliverability=False)
         except EmailNotValidError:
             flash('This email is not valid', 'danger')
@@ -108,9 +152,11 @@ def register():
         db.session.commit()
 
         login_user(new_user)
+        flash('Check your email to verify your account.', 'info')
         return redirect(url_for('dashboard'))
 
     return render_template('register.html', form=form)
+
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -127,11 +173,13 @@ def login():
 
     return render_template('login.html', form=form)
 
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
 
 @app.route('/dashboard')
 @login_required
@@ -140,37 +188,78 @@ def dashboard():
         return redirect(url_for('onboarding'))
     return render_template('dashboard.html')
 
+
 class onboardingForm(FlaskForm):
 
     username = StringField(
         validators=[InputRequired(), Length(min=3, max=24)],
-        render_kw={"Placeholder" : "username"}
+        render_kw={"placeholder": "username"}
     )
-    
+
     submit = SubmitField('Claim username')
-    
+
     def validate_username(self, username):
         existing_user = User.query.filter_by(username=username.data).first()
         if existing_user:
             raise ValidationError('That username is already taken. Please choose a different one.')
-    
+
+
 @app.route('/onboarding', methods=['GET', 'POST'])
 @login_required
 def onboarding():
+    
+    if current_user.onboarding_complete:
+        return redirect(url_for('dashboard'))
+    
     form = onboardingForm()
     if form.validate_on_submit():
         current_user.username = form.username.data
         current_user.onboarding_complete = True
         db.session.commit()
+        
+        verification_email(current_user) 
+        
         return redirect(url_for('dashboard'))
 
     return render_template('onboarding.html', form=form)
 
+
 @app.route('/<username>')
 def page(username):
     user = User.query.filter_by(username=username).first_or_404()
-    if user:
-        return render_template('page.html', user=user)
+    return render_template('page.html', user=user)
+
+
+@app.route('/verify/<token>')
+def verify_email(token):
+    user = User.query.filter_by(verification_token=token).first()
+
+    if not user:
+        flash('Invalid or expired verification link.', 'danger')
+        return redirect(url_for('dashboard'))
+
+    if user.verification_token_expires < datetime.utcnow():
+        flash('That link expired. Request a new one.', 'danger')
+        return redirect(url_for('dashboard'))
+
+    user.verified_email = True
+    user.verification_token = None
+    user.verification_token_expires = None
+    db.session.commit()
+
+    flash('Email verified!', 'success')
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/resend-verification')
+@login_required
+def resend_verification():
+    if current_user.verified_email:
+        return redirect(url_for('dashboard'))
+    verification_email(current_user)
+    flash('Verification email sent.', 'info')
+    return redirect(url_for('dashboard'))
+
 
 if __name__ == "__main__":
     with app.app_context():
