@@ -56,22 +56,27 @@ class RegisterForm(FlaskForm):
 class LoginForm(FlaskForm):
     email = StringField(
         validators=[InputRequired(), Email(), Length(min=1, max=24)], 
-        render_kw={"placeholder": "E-mail..."}
+        render_kw={"class" : "email-input" ,"placeholder": "E-mail..."}
     )
     
     password = PasswordField(
         validators=[InputRequired(), Length(min=8, max=32)], 
-        render_kw={"placeholder": "Password..."}
+        render_kw={"class" : "password-input" ,"placeholder": "Password..."}
     )
-    
-    submit = SubmitField('Login')
+
+    submit = SubmitField(
+        render_kw={"class" : "submit-button", "value" : "Login"}    
+    )
 
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    email_info = { "email" : current_user.email}
+    if current_user.is_authenticated:
+        email_info = { "email" : current_user.email}
+    else:
+        email_info = None
     
-    return render_template('index.html',email_info=email_info , verified_email=current_user.verified_email if current_user.is_authenticated else True)
+    return render_template('index.html',email_info=email_info)
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
