@@ -19,9 +19,13 @@
             {{ form.confirm_password }} 
             <div class="mt-2"></div>
             {{ form.submit }} <br>
+            <svg id="back-button" class="invert opacity-70 relative z-10 -top-4 hover:opacity-100 hover:cursor-pointer" width="16px" height="16px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 1H4L0 5L4 9H5V6H11C12.6569 6 14 7.34315 14 9C14 10.6569 12.6569 12 11 12H4V14H11C13.7614 14 16 11.7614 16 9C16 6.23858 13.7614 4 11 4H5V1Z" fill="#000000"/>
+            </svg>
+            <button id="next-button" class="submit-button -mt-9" type="button">Next</button>
         </form>
 
-        <br><a href="{{url_for('login')}}">already have an account?</a>
+        <br><a href="{{url_for('login')}}">already have an account?<span class="hover:decoration-amber-600 hover:underline">Sign in</span></a>
     </div>
 </div>
 

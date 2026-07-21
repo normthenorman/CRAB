@@ -43,28 +43,27 @@ class RegisterForm(FlaskForm):
     )
     password = PasswordField(
         validators=[InputRequired(), Length(min=8, max=32)],
-        render_kw={"id" : "pass", "class" : "password-input password-show" ,"placeholder": "Password..."}
+        render_kw={"id" : "pass", "class" : "password-input" ,"placeholder": "Password..."}
     )
     
     confirm_password = PasswordField(
         validators=[InputRequired(), Length(min=8, max=32)],
-        render_kw={"id" : "pass1", "class" : "password-input password-show" ,"placeholder": "Repeat password..."}
+        render_kw={"id" : "pass1", "class" : "password-input" ,"placeholder": "Repeat password..."}
     )
     
     submit = SubmitField(
-        render_kw={"class" : "submit-button", "value" : "Login"}
+        render_kw={"class" : "submit-button", "value" : "Sign up"}
     )
-
-    def validate_username(self, username):
-        existing_user = User.query.filter_by(username=username.data).first()
-        if existing_user:
-            raise ValidationError('That username is already taken. Please choose a different one.')
+    
+    def validate_confirm_password(self, field):
+        if field.data != self.password.data:
+            raise ValidationError('Passwords must match')
 
 
 class LoginForm(FlaskForm):
     email = StringField(
-        validators=[InputRequired(), Email(), Length(min=1, max=24)], 
-        render_kw={"class" : "password-input" ,"placeholder": "E-mail..."}
+        validators=[InputRequired(), Email(), Length(min=8, max=48)], 
+        render_kw={"class" : "email-input" ,"placeholder": "E-mail..."}
     )
     
     password = PasswordField(
@@ -150,6 +149,11 @@ class onboardingForm(FlaskForm):
     
     submit = SubmitField('Claim username')
     
+    def validate_username(self, username):
+        existing_user = User.query.filter_by(username=username.data).first()
+        if existing_user:
+            raise ValidationError('That username is already taken. Please choose a different one.')
+    
 @app.route('/onboarding', methods=['GET', 'POST'])
 @login_required
 def onboarding():
@@ -165,7 +169,8 @@ def onboarding():
 @app.route('/<username>')
 def page(username):
     user = User.query.filter_by(username=username).first_or_404()
-    return render_template('page.html', user=user)
+    if user:
+        return render_template('page.html', user=user)
 
 if __name__ == "__main__":
     with app.app_context():
