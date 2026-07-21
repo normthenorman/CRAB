@@ -39,13 +39,21 @@ def load_user(user_id):
 class RegisterForm(FlaskForm):
     email = StringField(
         validators=[InputRequired(), Email(), Length(min=8, max=48)],
-        render_kw={"placeholder": "E-mail..."}
+        render_kw={"id" : "email", "class" : "email-input" ,"placeholder": "E-mail..."}
     )
     password = PasswordField(
         validators=[InputRequired(), Length(min=8, max=32)],
-        render_kw={"placeholder": "Password..."}
+        render_kw={"id" : "pass", "class" : "password-input password-show" ,"placeholder": "Password..."}
     )
-    submit = SubmitField('Register')
+    
+    confirm_password = PasswordField(
+        validators=[InputRequired(), Length(min=8, max=32)],
+        render_kw={"id" : "pass1", "class" : "password-input password-show" ,"placeholder": "Repeat password..."}
+    )
+    
+    submit = SubmitField(
+        render_kw={"class" : "submit-button", "value" : "Login"}
+    )
 
     def validate_username(self, username):
         existing_user = User.query.filter_by(username=username.data).first()
@@ -56,7 +64,7 @@ class RegisterForm(FlaskForm):
 class LoginForm(FlaskForm):
     email = StringField(
         validators=[InputRequired(), Email(), Length(min=1, max=24)], 
-        render_kw={"class" : "email-input" ,"placeholder": "E-mail..."}
+        render_kw={"class" : "password-input" ,"placeholder": "E-mail..."}
     )
     
     password = PasswordField(

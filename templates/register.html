@@ -1,22 +1,30 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>crab.diy | Login</title>
+<title>crab.diy | Register</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/javascript.css') }}">
 {% endblock %}
 
 {% block body %}
-<div class="all-cred-form-pages">
-    <h1>Make an account</h1>
+<div class="bg-[#0a0a0f] min-h-screen flex items-center justify-center text-white">
+    <div class="w-100 p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10  text-center">
+        <h1>Make an account</h1>
 
-    <form class="cred-form" action="" method="post">
-        {{ form.hidden_tag() }}
-        {{ form.email }} <br>
-        <br>
-        {{ form.password }} <br>
-        <br>
-        {{ form.submit }} <br>
-    </form>
+        <form class="flex flex-col relative items-center mt-2" action="" method="post">
+            {{ form.hidden_tag() }}
+            {{ form.email }} <br>
+            <div class="-mt-4.5"></div>
+            {{ form.password }} <br>
+            <div class="-mt-4.5"></div>  
+            {{ form.confirm_password }} 
+            <div class="mt-2"></div>
+            {{ form.submit }} <br>
+        </form>
 
-    <br><a href="{{url_for('login')}}">already have an account?</a>
+        <br><a href="{{url_for('login')}}">already have an account?</a>
+    </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
+
 {% endblock %}

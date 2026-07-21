@@ -7,9 +7,6 @@ button.addEventListener("click", even => {
 
 // // // // // // // // // // // // // // // // //
 
- 
-console.log(email.email)
-
 function maskEmail(email, symbol = '@', replacement = '*') {
     const index = email.indexOf(symbol);
     if (index <= 0) return email; // no symbol found, or it's the first char
@@ -20,4 +17,6 @@ function maskEmail(email, symbol = '@', replacement = '*') {
 
     return first + maskedPart + rest;
 }
-document.getElementById('placeholder').innerHTML = maskEmail(email.email , '@')
+document.getElementById('placeholder').innerHTML = maskEmail(email.email , '@');
+
+// // // // // // // // // // // // // // // // //
