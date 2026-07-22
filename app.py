@@ -222,6 +222,9 @@ def page(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('page.html', user=user)
 
+@app.route('/claim-username')
+def claim_username():
+    return render_template('claim-username.html')
 
 @app.route('/verify/<token>')
 def verify_email(token):
