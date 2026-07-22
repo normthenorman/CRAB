@@ -13,7 +13,7 @@
                 {{ form.hidden_tag() }}
                 {{ form.email }} <br>
                 <div class="-mt-4.5"></div>
-                {{ form.password }} <br>
+                {{ form.password }} 
                 <div class="-mt-2"></div>
                 {{ form.submit }} <br>
             </form>
@@ -23,4 +23,7 @@
         <a href="{{url_for('index')}}" class="text-sm text-white/70 hover:text-white">home</a>
     </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+
 {% endblock %}

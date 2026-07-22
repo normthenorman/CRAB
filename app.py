@@ -222,10 +222,6 @@ def page(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('page.html', user=user)
 
-@app.route('/claim-username')
-def claim_username():
-    return render_template('claim-username.html')
-
 @app.route('/verify/<token>')
 def verify_email(token):
     user = User.query.filter_by(verification_token=token).first()
@@ -254,7 +250,7 @@ def resend_verification():
         return redirect(url_for('dashboard'))
     verification_email(current_user)
     flash('Verification email sent.', 'info')
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('index'))
 
 @app.errorhandler(404)
 def error_page(error):
