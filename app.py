@@ -72,46 +72,6 @@ def verification_email(user):
     except Exception as e:
         app.logger.error(f"Failed to send verification email to {user.email}: {e}")
 
-class RegisterForm(FlaskForm):
-    email = StringField(
-        validators=[InputRequired(), Email(), Length(min=8, max=48)],
-        render_kw={"id": "email", "class": "email-input", "placeholder": "E-mail..."}
-    )
-    password = PasswordField(
-        validators=[InputRequired(), Length(min=8, max=32)],
-        render_kw={"id": "pass", "class": "password-input", "placeholder": "Password..."}
-    )
-
-    confirm_password = PasswordField(
-        validators=[InputRequired(), Length(min=8, max=32)],
-        render_kw={"id": "pass1", "class": "password-input", "placeholder": "Repeat password..."}
-    )
-
-    submit = SubmitField(
-        render_kw={"class": "submit-button", "value": "Sign up"}
-    )
-
-    def validate_confirm_password(self, field):
-        if field.data != self.password.data:
-            raise ValidationError('Passwords must match')
-
-
-class LoginForm(FlaskForm):
-    email = StringField(
-        validators=[InputRequired(), Email(), Length(min=8, max=48)],
-        render_kw={"class": "email-input", "placeholder": "E-mail..."}
-    )
-
-    password = PasswordField(
-        validators=[InputRequired(), Length(min=8, max=32)],
-        render_kw={"class": "password-input", "placeholder": "Password..."}
-    )
-
-    submit = SubmitField(
-        render_kw={"class": "submit-button", "value": "Login"}
-    )
-
-
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if current_user.is_authenticated:
@@ -124,6 +84,10 @@ def index():
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
+    
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
     form = RegisterForm()
 
     if form.validate_on_submit():
@@ -180,22 +144,6 @@ def dashboard():
     if not current_user.onboarding_complete:
         return redirect(url_for('onboarding'))
     return render_template('dashboard.html')
-
-
-class onboardingForm(FlaskForm):
-
-    username = StringField(
-        validators=[InputRequired(), Length(min=3, max=24)],
-        render_kw={"placeholder": "username"}
-    )
-
-    submit = SubmitField('Claim username')
-
-    def validate_username(self, username):
-        existing_user = User.query.filter_by(username=username.data).first()
-        if existing_user:
-            raise ValidationError('That username is already taken. Please choose a different one.')
-
 
 @app.route('/onboarding', methods=['GET', 'POST'])
 @login_required
@@ -255,6 +203,60 @@ def resend_verification():
 @app.errorhandler(404)
 def error_page(error):
     return render_template('404.html'), 404
+
+### forms ###
+
+class onboardingForm(FlaskForm): #onboarding
+
+    username = StringField( 
+        validators=[InputRequired(), Length(min=3, max=24)],
+        render_kw={"placeholder": "username"}
+    )
+
+    submit = SubmitField('Claim username')
+
+    def validate_username(self, username):
+        existing_user = User.query.filter_by(username=username.data).first()
+        if existing_user:
+            raise ValidationError('That username is already taken. Please choose a different one.')
+
+class RegisterForm(FlaskForm): #register
+    email = StringField(
+        validators=[InputRequired(), Email(), Length(min=8, max=48)],
+        render_kw={"id": "email", "class": "email-input", "placeholder": "E-mail..."}
+    )
+    password = PasswordField(
+        validators=[InputRequired(), Length(min=8, max=32)],
+        render_kw={"id": "pass", "class": "password-input", "placeholder": "Password..."}
+    )
+
+    confirm_password = PasswordField(
+        validators=[InputRequired(), Length(min=8, max=32)],
+        render_kw={"id": "pass1", "class": "password-input", "placeholder": "Repeat password..."}
+    )
+
+    submit = SubmitField(
+        render_kw={"class": "submit-button", "value": "Sign up"}
+    )
+
+    def validate_confirm_password(self, field):
+        if field.data != self.password.data:
+            raise ValidationError('Passwords must match')
+
+class LoginForm(FlaskForm): #login
+    email = StringField(
+        validators=[InputRequired(), Email(), Length(min=8, max=48)],
+        render_kw={"class": "email-input", "placeholder": "E-mail..."}
+    )
+
+    password = PasswordField(
+        validators=[InputRequired(), Length(min=8, max=32)],
+        render_kw={"class": "password-input", "placeholder": "Password..."}
+    )
+
+    submit = SubmitField(
+        render_kw={"class": "submit-button", "value": "Login"}
+    )
 
 if __name__ == "__main__":
     with app.app_context():

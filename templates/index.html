@@ -5,42 +5,44 @@
 {% endblock %}
 
 {% block body %}
-<div id="all" class="bg-[#0a0a0f] h-screen">
+<div id="all" class="bg-[#0a0a0f] min-h-screen">
 
-    <div class="h-48 pt-6 px-6 text-white">
+    <div class="relative pt-6 px-6 text-white">
 
-        <nav class="fixed left-1/2 translate-x-[-50%] mt-2 border-zinc-700 border-2 px-10 py-3 rounded-full
-        shadow-2xl opacity-90 z-50">
-            <ul class="z-10 flex items-center gap-2 whitespace-nowrap">
-                <a class="mr-64 text-4xl font-semibold" href="{{ url_for('index') }}">crab<span class="text-orange-600">.</span>diy</a>
-                <a class="relative ml-25 mt-1 px-3 py-2 rounded-lg text-white/60 text-lg hover:text-white hover:bg-white/10 transition-all" href="#">Features</a>
-                <a class="relative mt-1 px-3 py-2 rounded-lg text-white/60 text-lg hover:text-white hover:bg-white/10 transition-all" href="#">Pricing</a>
-                <a class="relative mt-1 mr-20 px-3 py-2 rounded-lg text-white/60 text-lg hover:text-white hover:bg-white/10 transition-all" href="#">Discord</a>
-                
+        <nav class="fixed left-1/2 -translate-x-1/2 top-6 z-50 flex items-center justify-between gap-8
+        w-full max-w-5xl border-2 border-zinc-700 px-10 py-3 rounded-full shadow-2xl opacity-90">
+
+            <a class="text-4xl font-semibold" href="{{ url_for('index') }}">crab<span class="text-orange-600">.</span>diy</a>
+
+            <ul class="flex items-center gap-2 whitespace-nowrap">
+                <li><a class="block px-3 py-2 rounded-lg text-white/60 text-lg hover:text-white hover:bg-white/10 transition-all" href="#">Features</a></li>
+                <li><a class="block px-3 py-2 rounded-lg text-white/60 text-lg hover:text-white hover:bg-white/10 transition-all" href="#">Pricing</a></li>
+                <li><a class="block px-3 py-2 rounded-lg text-white/60 text-lg hover:text-white hover:bg-white/10 transition-all" href="#">Discord</a></li>
+            </ul>
+
+            <div class="flex items-center gap-4">
                 {% if current_user.is_authenticated %}
-                <a class="ml-2 -mr-4 text-2xl rounded-full bg-gradient-to-r from-orange-500 
-                to-orange-600 border-1 border-orange-700 text-white font-semibold py-2 px-5
-                hover:from-orange-400 hover:to-orange-500/90 shadow-md shadow-orange-500/50 
-                transition-all"
+                <a class="text-2xl rounded-full bg-gradient-to-r from-orange-500 to-orange-600 border
+                border-orange-700 text-white font-semibold py-2 px-5 hover:from-orange-400
+                hover:to-orange-500/90 shadow-md shadow-orange-500/50 transition-all"
                 href="{{ url_for('dashboard') }}">Dashboard</a>
                 {% else %}
-                <a class="ml-5 text-2xl" href="{{ url_for('login') }}">Login</a>
-                <a class="ml-2 -mr-4 text-2xl rounded-full bg-gradient-to-r from-orange-500 
-                to-orange-600 border-1 border-orange-700 text-white font-semibold py-2 px-5
-                hover:from-orange-400 hover:to-orange-500/90 shadow-md shadow-orange-500/50 
-                transition-all"
+                <a class="text-2xl" href="{{ url_for('login') }}">Login</a>
+                <a class="text-2xl rounded-full bg-gradient-to-r from-orange-500 to-orange-600 border
+                border-orange-700 text-white font-semibold py-2 px-5 hover:from-orange-400
+                hover:to-orange-500/90 shadow-md shadow-orange-500/50 transition-all"
                 href="{{ url_for('register') }}">Join For Free</a>
                 {% endif %}
-            </ul>
+            </div>
         </nav>
 
-            {% if current_user.is_authenticated and current_user.onboarding_complete and not current_user.verified_email %}
-        <div id="kablow" class="absolute h-9 top-[125px] w-4xl overflow-hidden rounded-md border border-orange-400/60
-            left-1/2 -translate-x-1/2 flex items-center justify-between px-4
+        {% if current_user.is_authenticated and current_user.onboarding_complete and not current_user.verified_email %}
+        <div id="kablow" class="absolute top-28 left-1/2 -translate-x-1/2 h-9 max-w-fit
+            overflow-hidden rounded-md border border-orange-400/60 flex items-center justify-between px-4
             bg-gradient-to-r from-orange-600/70 to-orange-400/50">
-        
+
             <div class="flex whitespace-nowrap gap-8 overflow-hidden">
-                <span class="text-white opacity-100">A verification link has been sent to your email address, <span id="placeholder"></span> . Didn't receive anything? <a class="font-semibold underline decoration-orange-200 hover:text-white transition-colors" href="{{ url_for('resend_verification') }}">Click here</a></span>
+                <span class="text-white opacity-100">Almost there! A verification was email sent to <span id="placeholder"></span>. Didn't get it? <a class="font-semibold underline decoration-orange-200 hover:text-white transition-colors" href="{{ url_for('resend_verification') }}">Resend</a></span>
             </div>
 
             <button id="kaput" class="flex-shrink-0 hover:cursor-pointer">
@@ -49,36 +51,27 @@
             </button>
 
         </div>
-            {% endif %}
+        {% endif %}
 
     </div>
 
-    <div id="Slogan" class="text-center h-70 font-index">
+    <div id="Slogan" class="relative top-20 flex flex-col items-center text-center gap-6 pt-40 pb-16 font-index">
 
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500/15 border
-        border-amber-500/30 text-orange-500 text-xs font-semibold relative top-15">
+        border-amber-500/30 text-orange-500 text-xs font-semibold">
             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             CLAIM YOUR CRAB
         </span>
 
-        <div class="flex items-center justify-center text-5xl font-bold text-white 
-        relative top-20">
+        <h1 class="text-5xl font-bold text-white">Own your identity. Claim <br> your Crab.</h1>
 
-            <h1>Own your identity. Claim <br> your Crab.</h1>
-
-        </div>
-
-        <div class="">
-            <p class="font-arimo text-center relative top-23 text-zinc-400">Music intergration, accolades, links, feature rich, custom layouts.
-            <br> You profile, your way.</p>
-        </div>
+        <p class="font-arimo text-zinc-400">Music intergration, accolades, links, feature rich, custom layouts.
+        <br> You profile, your way.</p>
 
     </div>
 
-    <div class="inline-flex items-center m-auto gap-2.5 rounded-2xl p-5 relative left-1/2 translate-x-[-50%]">
-
+    <div class="flex items-center justify-center gap-2.5 rounded-2xl p-5 relative top-10">
       <div class="flex h-12 items-center rounded-md border border-orange-900/40 bg-[#191512] pl-4 pr-1.5">
-        
         <span class="whitespace-nowrap text-[15px] font-medium text-orange-400">
           crab.diy/
         </span>
@@ -88,13 +81,10 @@
         text-orange-50 placeholder-orange-100/30 outline-none"/>
 
       </div>
-
-      <button class="h-12 whitespace-nowrap rounded-md bg-gradient-to-b from-orange-400 to-orange-600 px-5 text-[15px] font-medium text-orange-950 transition hover:from-orange-300 hover:to-orange-500 active:scale-[0.98]">
+      <button class="h-12 whitespace-nowrap rounded-md bg-gradient-to-b from-orange-400 to-orange-600 px-5 text-[15px] font-medium text-zinc-900 transition hover:from-orange-400 hover:to-orange-500 active:scale-[0.98]">
         Claim now
       </button>
-
     </div>
-
 </div>
 
 <script>
@@ -115,6 +105,8 @@ slogan.style.display = (slogan === randomSlogan) ? '' : 'none';
 
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 
+{% endblock %}
+
     <!-- <div class="min-h-screen w-full relative bg-gradient-to-r from-fuchsia-500 via-red-600 to-orange-700
     flex items-center justify-center text-center flex-col gap-10 text-white p-52">
         <h1 class="text-7xl">Section 1</h1>
@@ -122,5 +114,3 @@ slogan.style.display = (slogan === randomSlogan) ? '' : 'none';
         something is really something to be caring about because something can always have something <br>
         happen to that something. something worth talking about is you, why are you here? looking at my code?</p>
     </div>  -->
-
-{% endblock %}

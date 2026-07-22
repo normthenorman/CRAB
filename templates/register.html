@@ -2,7 +2,6 @@
 
 {% block head %}
 <title>crab.diy | Register</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/javascript.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -14,8 +13,26 @@
             {{ form.hidden_tag() }}
             {{ form.email }} <br>
             <div class="-mt-4.5"></div>
+
+            <img id="turn_off" class="absolute top-18 right-15 pl-3 flex items-center
+            opacity-70 hover:cursor-pointer hover:opacity-100 z-50" 
+            src="{{ url_for('static', filename='assets/visibility_off.svg') }}" alt="">
+                
+            <img id="turn_on" class="absolute top-18 right-15 pl-3 flex items-center
+            opacity-70 hover:cursor-pointer hover:opacity-100 z-50" 
+            src="{{ url_for('static', filename='assets/visibility_on.svg') }}" alt="">
+
             {{ form.password }} <br>
             <div class="-mt-4.5"></div>  
+
+            <img id="turn_off1" class="absolute top-5 right-15 pl-3 flex items-center
+            opacity-70 hover:cursor-pointer hover:opacity-100 z-50" 
+            src="{{ url_for('static', filename='assets/visibility_off.svg') }}" alt="">
+                
+            <img id="turn_on1" class="absolute top-5 right-15 pl-3 flex items-center
+            opacity-70 hover:cursor-pointer hover:opacity-100 z-50" 
+            src="{{ url_for('static', filename='assets/visibility_on.svg') }}" alt=""> 
+
             {{ form.confirm_password }} 
             <div class="mt-2"></div>
             {{ form.submit }} <br>
