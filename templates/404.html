@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>didn't find that one</title>
+{% endblock %}
+
+{% block body %}
+<div class="selection:bg-orange-600/80 bg-[#0a0a0f] min-h-screen pt-6 px-6 text-white 
+overflow-hidden text-center">
+
+    <h1 class="relative font-bubbles text-8xl top-60 text-ora">404</h1>
+    <p class="relative top-65 text-lg">We can't find that <span class="text-orange-500">Crab</span> page. Maybe 
+    <span id="suggestion">check if the username you typed is correct</span>.</p>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/404.js') }}"></script>
+{% endblock %}

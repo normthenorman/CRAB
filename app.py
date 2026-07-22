@@ -1,5 +1,6 @@
 import os
 import secrets
+from requests import status_codes
 from dotenv import load_dotenv
 from flask import Flask, render_template, url_for, redirect, flash
 from flask_bcrypt import Bcrypt
@@ -62,22 +63,14 @@ def verification_email(user):
     db.session.commit()
 
     verify_url = url_for('verify_email', token=token, _external=True)
-    msg = Message(
-        'Verify your crab.diy account',
-        recipients=[user.email]
-    )
-    msg.body = f"""
-    Verify your email:
-    {verify_url}
-    This link expires in 36 hours.
-    """
-    msg.html = render_template(
-        "emails/verify_email.html",
-        verify_url=verify_url,
-        user=user
-    )
-    mail.send(msg)
+    msg = Message('Verify your crab.diy account', recipients=[user.email])
+    msg.body = f"Verify your email:\n{verify_url}\nThis link expires in 36 hours."
+    msg.html = render_template("emails/verify_email.html", verify_url=verify_url, user=user)
 
+    try:
+        mail.send(msg)
+    except Exception as e:
+        app.logger.error(f"Failed to send verification email to {user.email}: {e}")
 
 class RegisterForm(FlaskForm):
     email = StringField(
@@ -210,16 +203,16 @@ def onboarding():
     
     if current_user.onboarding_complete:
         return redirect(url_for('dashboard'))
-    
-    form = onboardingForm()
-    if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.onboarding_complete = True
-        db.session.commit()
-        
-        verification_email(current_user) 
-        
-        return redirect(url_for('dashboard'))
+    else:
+        form = onboardingForm()
+        if form.validate_on_submit():
+            current_user.username = form.username.data
+            current_user.onboarding_complete = True
+            db.session.commit()
+            
+            verification_email(current_user) 
+            
+            return redirect(url_for('dashboard'))
 
     return render_template('onboarding.html', form=form)
 
@@ -260,6 +253,9 @@ def resend_verification():
     flash('Verification email sent.', 'info')
     return redirect(url_for('dashboard'))
 
+@app.errorhandler(404)
+def error_page(error):
+    return render_template('404.html'), 404
 
 if __name__ == "__main__":
     with app.app_context():
