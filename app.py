@@ -133,7 +133,6 @@ def login():
 
     return render_template('login.html', form=form)
 
-
 @app.route('/logout')
 @login_required
 def logout():
