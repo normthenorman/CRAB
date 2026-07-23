@@ -14,4 +14,4 @@ turnOnButton.addEventListener('click', () => {
     input.type = 'password'
     turnOffButton.style.display = ''
     turnOnButton.style.display = 'none';
-});         
+});

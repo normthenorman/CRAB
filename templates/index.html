@@ -5,12 +5,12 @@
 {% endblock %}
 
 {% block body %}
-<div id="all" class="bg-[#0a0a0f] min-h-screen">
+<div id="all" class="bg-[#0a0a0f] min-h-screen overflow-x-hidden">
 
     <div class="relative pt-6 px-6 text-white">
 
         <nav class="fixed left-1/2 -translate-x-1/2 top-6 z-50 flex items-center justify-between gap-8
-        w-full max-w-5xl border-2 border-zinc-700 px-10 py-3 rounded-full shadow-2xl opacity-90">
+        w-full max-w-5xl border border-zinc-700 px-10 py-3 rounded-full shadow-2xl opacity-90">
 
             <a class="text-4xl font-semibold" href="{{ url_for('index') }}">crab<span class="text-orange-600">.</span>diy</a>
 
@@ -37,12 +37,22 @@
         </nav>
 
         {% if current_user.is_authenticated and current_user.onboarding_complete and not current_user.verified_email %}
-        <div id="kablow" class="absolute top-28 left-1/2 -translate-x-1/2 h-9 max-w-fit
-            overflow-hidden rounded-md border border-orange-400/60 flex items-center justify-between px-4
-            bg-gradient-to-r from-orange-600/70 to-orange-400/50">
+        <div id="kablow" class="z-50 absolute top-28 left-1/2 -translate-x-1/2 h-9 max-w-fit
+        overflow-hidden rounded-md border border-orange-400/60 flex items-center 
+        justify-between px-4 bg-gradient-to-r from-orange-600/70 to-orange-400/50">
 
-            <div class="flex whitespace-nowrap gap-8 overflow-hidden">
-                <span class="text-white opacity-100">Almost there! A verification was email sent to <span id="placeholder"></span>. Didn't get it? <a class="font-semibold underline decoration-orange-200 hover:text-white transition-colors" href="{{ url_for('resend_verification') }}">Resend</a></span>
+            <div class="flex whitespace-nowrap gap-8">
+                <span class="opacity-100">
+                    Almost there! A verification email was sent to <span id="placeholder" class="font-medium"></span>. Didn't get it?
+                
+            
+                    <a  href="{{ url_for('resend_verification') }}"
+                        class="relative z-50 cursor-pointer font-semibold text-orange-200 underline
+                        decoration-orange-200 underline-offset-2 transition-colors hover:text-white
+                        hover:decoration-white focus:outline-none focus:ring-2 focus:ring-orange-200
+                        focus:ring-offset-2 focus:ring-offset-transparent">Resend
+                    </a>
+                </span>
             </div>
 
             <button id="kaput" class="flex-shrink-0 hover:cursor-pointer">
@@ -70,7 +80,7 @@
 
     </div>
 
-    <div class="flex items-center justify-center gap-2.5 rounded-2xl p-5 relative top-10">
+    <div class="scale-110 flex items-center justify-center gap-2.5 rounded-2xl p-5 relative top-10">
       <div class="flex h-12 items-center rounded-md border border-orange-900/40 bg-[#191512] pl-4 pr-1.5">
         <span class="whitespace-nowrap text-[15px] font-medium text-orange-400">
           crab.diy/

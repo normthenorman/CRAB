@@ -86,6 +86,7 @@ def index():
 def register():
     
     if current_user.is_authenticated:
+        flash("You're already signed in.", "info")
         return redirect(url_for('index'))
     
     form = RegisterForm()
@@ -125,7 +126,7 @@ def login():
             login_user(user)
             return redirect(url_for('dashboard'))
         else:
-            flash('Invalid username or password', 'danger')
+            flash('Invalid email or password', 'danger')
             return redirect(url_for('login'))
 
     return render_template('login.html', form=form)
@@ -142,6 +143,7 @@ def logout():
 @login_required
 def dashboard():
     if not current_user.onboarding_complete:
+        flash('You need to claim a username first', 'info')
         return redirect(url_for('onboarding'))
     return render_template('dashboard.html')
 
