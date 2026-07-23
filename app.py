@@ -127,6 +127,8 @@ def login():
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid email or password', 'danger')
+            if not user:
+                flash('That user does not exist')
             return redirect(url_for('login'))
 
     return render_template('login.html', form=form)
