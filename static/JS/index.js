@@ -13,7 +13,7 @@ function maskEmail(email, symbol = '@', replacement = '*') {
 
     const first = email.slice(0, 4);
     const maskedPart = replacement.repeat(index - 1); // chars between first char and symbol
-    const rest = email.slice(index); // includes '@' and domain
+    const rest = email.slice(index);
 
     return first + maskedPart + rest;
 }

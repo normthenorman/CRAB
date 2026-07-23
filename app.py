@@ -2,7 +2,7 @@ import os
 import secrets
 from requests import status_codes
 from dotenv import load_dotenv
-from flask import Flask, render_template, url_for, redirect, flash
+from flask import Flask, render_template, url_for, redirect, flash, session, request
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
@@ -74,13 +74,26 @@ def verification_email(user):
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
+    form = claimUsernameForm()
+    chosen_username = None
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+
+        if not user:
+            flash('Congrats! That username is not taken', 'success')
+            session['chosen_username'] = form.username.data
+            return redirect(url_for('register'))
+        else:
+            flash('Sorry :( That username is taken.', 'error')
+
     if current_user.is_authenticated:
         email_info = {"email": current_user.email}
     else:
         email_info = None
-
-    return render_template('index.html', email_info=email_info)
-
+        
+    return render_template(
+        'index.html', email_info=email_info, chosen_username=chosen_username, form=form)
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
@@ -90,7 +103,7 @@ def register():
         return redirect(url_for('index'))
     
     form = RegisterForm()
-
+    
     if form.validate_on_submit():
         try:
             emailinfo = validate_email(form.email.data, check_deliverability=False)
@@ -124,11 +137,11 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('onboarding'))
         else:
-            flash('Invalid email or password', 'danger')
+            flash('Invalid password', 'danger')
             if not user:
-                flash('That user does not exist')
+                flash('That user does not exist', 'info')
             return redirect(url_for('login'))
 
     return render_template('login.html', form=form)
@@ -156,6 +169,10 @@ def onboarding():
         return redirect(url_for('dashboard'))
     else:
         form = onboardingForm()
+        
+        if request.method == "GET":
+            form.username.data = session.get("chosen_username", "")
+
         if form.validate_on_submit():
             current_user.username = form.username.data
             current_user.onboarding_complete = True
@@ -208,6 +225,27 @@ def error_page(error):
     return render_template('404.html'), 404
 
 ### forms ###
+
+class claimUsernameForm(FlaskForm):
+    username = StringField(
+        validators=[InputRequired(), Length(min=3, max=24)],
+        render_kw={
+            "placeholder": "username",
+            "class": "h-full w-32 bg-transparent px-1 text-[15px] text-orange-50 "
+                     "placeholder-orange-100/30 outline-none border-0 appearance-none "
+                     "focus:outline-none focus:ring-0 box-border"
+        }
+    )
+    
+    submit = SubmitField(
+        render_kw={
+            "value": "Claim now",
+            "class": "h-12 whitespace-nowrap rounded-md bg-gradient-to-b from-orange-400 "
+                     "to-orange-600 px-5 text-[15px] font-medium text-zinc-900 transition "
+                     "hover:from-orange-400 hover:to-orange-500 active:scale-[0.98] "
+                     "border-0 appearance-none focus:outline-none focus:ring-0 cursor-pointer box-border"
+        }
+    )
 
 class onboardingForm(FlaskForm): #onboarding
 

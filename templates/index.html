@@ -80,21 +80,19 @@
 
     </div>
 
-    <div class="scale-110 flex items-center justify-center gap-2.5 rounded-2xl p-5 relative top-10">
+    <form method="post" class="scale-110 flex items-center justify-center gap-2.5 rounded-2xl p-5 relative top-10">
       <div class="flex h-12 items-center rounded-md border border-orange-900/40 bg-[#191512] pl-4 pr-1.5">
         <span class="whitespace-nowrap text-[15px] font-medium text-orange-400">
           crab.diy/
         </span>
-
-        <input type="text" placeholder="username"
-        class="h-full w-32 bg-transparent px-1 text-[15px]
-        text-orange-50 placeholder-orange-100/30 outline-none"/>
+        {{ form.hidden_tag() }}
+        {{ form.username }}
 
       </div>
-      <button class="h-12 whitespace-nowrap rounded-md bg-gradient-to-b from-orange-400 to-orange-600 px-5 text-[15px] font-medium text-zinc-900 transition hover:from-orange-400 hover:to-orange-500 active:scale-[0.98]">
-        Claim now
-      </button>
-    </div>
+
+        {{ form.submit }}
+
+    </form>
 
 </div>
 
@@ -112,9 +110,11 @@ slogan.style.display = (slogan === randomSlogan) ? '' : 'none';
 
 <script>
     const email = {{ email_info | tojson }};
+    const username = {{ chosen_username | tojson }};
 </script>
 
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+<script src="{{ url_for('static', filename='js/onboarding.js') }}"></script>
 
 {% endblock %}
 
