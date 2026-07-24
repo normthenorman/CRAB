@@ -1,6 +1,5 @@
 import os
 import secrets
-from requests import status_codes
 from dotenv import load_dotenv
 from flask import Flask, render_template, url_for, redirect, flash, session, request
 from flask_bcrypt import Bcrypt
@@ -85,7 +84,7 @@ def index():
             session['chosen_username'] = form.username.data
             return redirect(url_for('register'))
         else:
-            flash('Sorry :( That username is taken.', 'error')
+            flash('Sorry :( That username is taken.', 'info')
 
     if current_user.is_authenticated:
         email_info = {"email": current_user.email}

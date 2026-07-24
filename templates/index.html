@@ -94,6 +94,32 @@
 
     </form>
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'info' %}
+                    <div class="toast z-50 fixed bottom-5 right-3 h-9 max-w-fit overflow-hidden rounded-md border
+                    border-orange-400/60 flex items-center justify-between px-4 bg-gradient-to-r from-orange-600/70
+                    to-orange-400/50 animate-slide-in {{ category }}">
+                        {{ message }}
+                    </div>
+                {% elif category == 'danger' %}
+                    <div class="toast z-50 fixed bottom-5 right-3 h-9 max-w-fit overflow-hidden rounded-md border
+                    border-red-400/60 flex items-center justify-between px-4 bg-gradient-to-r from-red-600/70
+                    to-red-400/50 animate-slide-in {{ category }}">
+                        {{ message }}
+                    </div>
+                {% elif category == 'success' %}
+                    <div class="toast z-50 fixed bottom-5 right-3 h-9 max-w-fit overflow-hidden rounded-md border
+                    border-green-400/60 flex items-center justify-between px-4 bg-gradient-to-r from-green-600/70
+                    to-green-400/50 animate-slide-in {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
 </div>
 
 <script>
@@ -109,8 +135,31 @@ slogan.style.display = (slogan === randomSlogan) ? '' : 'none';
 </script>
 
 <script>
+//email thing
+
     const email = {{ email_info | tojson }};
     const username = {{ chosen_username | tojson }};
+</script>
+
+<script>
+//timer
+
+document.addEventListener('DOMContentLoaded', () => {
+  const VISIBLE_DURATION = 3000;
+  const EXIT_ANIMATION_DURATION = 300;
+
+  document.querySelectorAll('.toast').forEach((toast) => {
+    setTimeout(() => {
+      toast.classList.remove('animate-slide-in');
+      toast.classList.add('animate-slide-out');
+
+      setTimeout(() => {
+        toast.remove();
+      }, EXIT_ANIMATION_DURATION);
+    }, VISIBLE_DURATION);
+  });
+});
+
 </script>
 
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>

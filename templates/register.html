@@ -45,6 +45,23 @@
 
         <br><a href="{{url_for('login')}}">already have an account?<span class="hover:decoration-amber-600 hover:underline">Sign in</span></a>
     </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'info' %}
+                    <div class="text-yellow-500 flash {{ category }}">
+                        {{ message }}
+                    </div>
+                {% elif category == 'danger' %}
+                    <div class="text-red-500 flash {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
 </div>
 
 <script src="{{ url_for('static', filename='js/register.js') }}"></script>
