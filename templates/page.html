@@ -1,5 +1,32 @@
 {% extends 'base.html' %}
 
-{% block head %}{% endblock %}
+{% block head %}
+<title>{{ user.username }} | crab.diy</title>
+{% endblock %}
 
-{% block body %}{% endblock %}
+{% block body %}
+<div class="bg-[#0a0a0f] min-h-screen flex items-center justify-center text-white px-6 py-16">
+    <div class="w-full max-w-md flex flex-col items-center text-center border border-white/60 py-5
+    rounded-md drop-shadow-sm drop-shadow-white bg-[#0a0a0f]">
+
+        {% if user.avatar_url %}
+        <img src="{{ user.avatar_url }}" alt="{{ user.username }}"
+             class="w-24 h-24 rounded-full object-cover border-2 border-white/10 shadow-lg">
+        {% else %}
+        <div class="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-semibold
+        border-2 border-white/10 shadow-lg"
+        style="background: linear-gradient(135deg, {{ user.accent_color }}33, {{ user.accent_color }}11);
+               color: {{ user.accent_color }};">
+            {{ user.username[0]|upper }}
+        </div>
+        {% endif %}
+
+        <h1 class="font-index text-2xl font-bold mt-5">{{ user.username }}</h1>
+
+        <p class="font-arimo text-zinc-400 text-sm mt-2 max-w-xs">
+            {{ user.bio or "This crab hasn't written a bio yet." }}
+        </p>
+
+    </div>
+</div>
+{% endblock %}

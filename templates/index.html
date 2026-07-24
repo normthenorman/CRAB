@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-<div id="all" class="bg-[#0a0a0f] min-h-screen overflow-x-hidden">
+<div id="all" class="bg-[#0a0a0f] min-h-screen  overflow-x-hidden">
 
     <div class="relative pt-6 px-6 text-white">
 
@@ -123,27 +123,13 @@
 </div>
 
 <script>
-const firstSlogan = document.getElementById('firstSlogan');
-const secondSlogan = document.getElementById('secondSlogan');
-const possibleSlogans = [firstSlogan, secondSlogan];
-
-const randomSlogan = possibleSlogans[Math.floor(Math.random() * possibleSlogans.length)];
-
-possibleSlogans.forEach(slogan => {
-slogan.style.display = (slogan === randomSlogan) ? '' : 'none';
-});
-</script>
-
-<script>
 //email thing
 
     const email = {{ email_info | tojson }};
-    const username = {{ chosen_username | tojson }};
 </script>
 
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script src="{{ url_for('static', filename='js/onboarding.js') }}"></script>
 
 {% endblock %}
 

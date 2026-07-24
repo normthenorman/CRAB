@@ -122,7 +122,6 @@ def register():
         db.session.commit()
 
         login_user(new_user)
-        flash('Check your email to verify your account.', 'info')
         return redirect(url_for('dashboard'))
 
     return render_template('register.html', form=form)
@@ -250,10 +249,12 @@ class onboardingForm(FlaskForm): #onboarding
 
     username = StringField( 
         validators=[InputRequired(), Length(min=3, max=24)],
-        render_kw={"placeholder": "username"}
+        render_kw={"placeholder": "username", "class": "username-input"}
     )
 
-    submit = SubmitField('Claim username')
+    submit = SubmitField(
+        render_kw={"value": "Claim username", "class": "onboarding-submit-button"}
+    )
 
     def validate_username(self, username):
         existing_user = User.query.filter_by(username=username.data).first()

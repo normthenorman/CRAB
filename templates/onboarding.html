@@ -5,41 +5,49 @@
 {% endblock %}
 
 {% block body %}
-<div class="bg-[#0a0a0f] min-h-screen pt-6 px-6 text-white">    
+<div class="relative bg-[#101017] min-h-screen w-full overflow-hidden text-white">
 
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
-        {{ form.username }}
-        <br>
-        {{ form.submit }}
-    </form>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                {% if category == 'info' %}
-                    <div class="toast z-50 fixed bottom-5 right-3 h-9 max-w-fit overflow-hidden rounded-md border
-                    border-orange-400/60 flex items-center justify-between px-4 bg-gradient-to-r from-orange-600/70
-                    to-orange-400/50 animate-slide-in {{ category }}">
-                        {{ message }}
-                    </div>
-                {% elif category == 'danger' %}
-                    <div class="toast z-50 fixed bottom-5 right-3 h-9 max-w-fit overflow-hidden rounded-md border
-                    border-red-400/60 flex items-center justify-between px-4 bg-gradient-to-r from-red-600/70
-                    to-red-400/50 animate-slide-in {{ category }}">
-                        {{ message }}
-                    </div>
-                {% elif category == 'success' %}
-                    <div class="toast z-50 fixed bottom-5 right-3 h-9 max-w-fit overflow-hidden rounded-md border
-                    border-green-400/60 flex items-center justify-between px-4 bg-gradient-to-r from-green-600/70
-                    to-green-400/50 animate-slide-in {{ category }}">
-                        {{ message }}
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-</div> 
+    <div class="z-40 absolute inset-y-0 left-0 w-5/12 bg-[#0a0a0f]"></div>
 
+    <div class="z-50 absolute top-1/2 -translate-y-1/2 left-25 w-100 p-6 rounded-2xl bg-[#0a0a0f] backdrop-blur-xl border border-white/10 text-center">
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            {{ form.username }}
+            <div class="h-1.5"></div>
+            {{ form.submit }}
+        </form>
+    </div>
 
+    <h1 class="text-3xl font-index z-50 absolute top-1/2 left-[70.8333%] -translate-x-1/2 -translate-y-1/2">Crab thing</h1>
+
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {% if category == 'info' %}
+                <div class="toast z-50 fixed bottom-5 right-3 h-9 max-w-fit overflow-hidden rounded-md border
+                border-orange-400/60 flex items-center justify-between px-4 bg-gradient-to-r from-orange-600/70
+                to-orange-400/50 animate-slide-in {{ category }}">
+                    {{ message }}
+                </div>
+            {% elif category == 'danger' %}
+                <div class="toast z-50 fixed bottom-5 right-3 h-9 max-w-fit overflow-hidden rounded-md border
+                border-red-400/60 flex items-center justify-between px-4 bg-gradient-to-r from-red-600/70
+                to-red-400/50 animate-slide-in {{ category }}">
+                    {{ message }}
+                </div>
+            {% elif category == 'success' %}
+                <div class="toast z-50 fixed bottom-5 right-3 h-9 max-w-fit overflow-hidden rounded-md border
+                border-green-400/60 flex items-center justify-between px-4 bg-gradient-to-r from-green-600/70
+                to-green-400/50 animate-slide-in {{ category }}">
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 {% endblock %}
