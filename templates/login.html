@@ -36,18 +36,27 @@
         {% if messages %}
             {% for category, message in messages %}
                 {% if category == 'info' %}
-                    <div class="text-yellow-500 flash {{ category }}">
+                    <div class="toast z-50 fixed bottom-5 right-3 h-9 max-w-fit overflow-hidden rounded-md border
+                    border-orange-400/60 flex items-center justify-between px-4 bg-gradient-to-r from-orange-600/70
+                    to-orange-400/50 animate-slide-in {{ category }}">
                         {{ message }}
                     </div>
                 {% elif category == 'danger' %}
-                    <div class="text-red-500 flash {{ category }}">
+                    <div class="toast z-50 fixed bottom-5 right-3 h-9 max-w-fit overflow-hidden rounded-md border
+                    border-red-400/60 flex items-center justify-between px-4 bg-gradient-to-r from-red-600/70
+                    to-red-400/50 animate-slide-in {{ category }}">
+                        {{ message }}
+                    </div>
+                {% elif category == 'success' %}
+                    <div class="toast z-50 fixed bottom-5 right-3 h-9 max-w-fit overflow-hidden rounded-md border
+                    border-green-400/60 flex items-center justify-between px-4 bg-gradient-to-r from-green-600/70
+                    to-green-400/50 animate-slide-in {{ category }}">
                         {{ message }}
                     </div>
                 {% endif %}
             {% endfor %}
         {% endif %}
     {% endwith %}
-
 </div>
 
 <script src="{{ url_for('static', filename='js/login.js') }}">   
